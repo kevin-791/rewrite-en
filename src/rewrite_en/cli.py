@@ -1,4 +1,4 @@
-"""Command line: run, set-key, test, config, install-autostart, uninstall-autostart."""
+"""Command line: run, set-key, set-hotkey, test, config, install-autostart, uninstall-autostart."""
 
 from __future__ import annotations
 
@@ -86,6 +86,34 @@ def cmd_config(args) -> int:
     return 0
 
 
+def cmd_set_hotkey(args) -> int:
+    from rewrite_en import autostart, hotkey_setup as hs
+
+    if args.record:
+        print("Press the key combination you want (within 10 seconds)...")
+        combo = hs.record_hotkey()
+        if combo is None:
+            print("No valid combination recorded (it needs a modifier plus one key).", file=sys.stderr)
+            return 1
+    elif args.combo:
+        try:
+            combo = hs.normalise_hotkey(args.combo)
+        except hs.HotkeyError as e:
+            print(f"Invalid hotkey {args.combo!r}: {e}", file=sys.stderr)
+            return 1
+    else:
+        print('Give a combo, e.g. rewrite-en set-hotkey "<cmd>+<shift>+e", or use --record.', file=sys.stderr)
+        return 2
+
+    for w in hs.warnings_for(combo):
+        print(f"Warning: {w}", file=sys.stderr)
+    path = hs.save_hotkey(combo)
+    print(f"Hotkey set to {combo} in {path}")
+    restarted = autostart.restart_if_installed()
+    print(restarted or "Restart rewrite-en for the new hotkey to take effect.")
+    return 0
+
+
 def cmd_install_autostart(args) -> int:
     from rewrite_en import autostart
 
@@ -116,6 +144,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     add("run", "run in the background and listen for the hotkey", cmd_run)
     add("set-key", "store your Anthropic API key in the OS keychain", cmd_set_key)
+    h = add("set-hotkey", 'change the hotkey, e.g. set-hotkey "<cmd>+<shift>+e" or set-hotkey --record', cmd_set_hotkey)
+    h.add_argument("combo", nargs="?", help='pynput syntax, e.g. "<ctrl>+<shift>+e"')
+    h.add_argument("--record", action="store_true", help="press the combination instead of typing it")
     add("test", "rewrite TEXT once, without the hotkey", cmd_test).add_argument("text")
     add("config", f"create/show the config file ({config_path()})", cmd_config)
     add("install-autostart", "start at login", cmd_install_autostart)

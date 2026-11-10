@@ -78,9 +78,12 @@ Requirements use [EARS](https://alistairmavin.com/ears/) phrasing: *WHEN* (event
 
 | ID | Requirement |
 |---|---|
-| REQ-CLI-1 | The `rewrite-en` command shall provide `run`, `set-key`, `test "text"`, `config`, `install-autostart` and `uninstall-autostart`. |
+| REQ-CLI-1 | The `rewrite-en` command shall provide `run`, `set-key`, `set-hotkey`, `test "text"`, `config`, `install-autostart` and `uninstall-autostart`. |
 | REQ-CLI-2 | `rewrite-en test "text"` shall print the rewrite of the text without using the hotkey or the clipboard, and exit non-zero with the error code on failure. |
 | REQ-CLI-3 | The `-v` / `--verbose` option shall be accepted both before and after the subcommand (`rewrite-en -v run` and `rewrite-en run -v`). |
+| REQ-CLI-4 | `rewrite-en set-hotkey "<combo>"` shall validate the combo (pynput syntax, at least one modifier and exactly one non-modifier key, no duplicates), normalise it (lower case, modifiers ordered ctrl, alt, shift, cmd), and save it to `config.toml` by changing only the `hotkey` line (other lines and comments untouched; file created with defaults if missing). IF the combo is invalid THEN it shall print why, exit non-zero and leave the config unchanged. WHERE the OS is macOS and the combo uses `<alt>`, it shall print a warning (Option may produce a different character). |
+| REQ-CLI-5 | `rewrite-en set-hotkey --record` shall wait up to 10 seconds for the user to press a key combination, take the keys held together until all are released, and save that combo as in REQ-CLI-4. |
+| REQ-CLI-6 | WHEN a new hotkey is saved, WHERE the macOS LaunchAgent is installed, the system shall restart it (`launchctl kickstart -k`) so the hotkey applies immediately; otherwise it shall print that rewrite-en must be restarted. |
 
 ## 10. Platform
 

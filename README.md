@@ -21,6 +21,7 @@ Nếu không muốn dùng keychain, đặt biến môi trường `ANTHROPIC_API_
 |---|---|
 | `rewrite-en run` | Chạy và lắng nghe hotkey (thêm `-v` để in log ra terminal) |
 | `rewrite-en set-key` | Lưu API key vào Credential Manager / Keychain |
+| `rewrite-en set-hotkey --record` | Đổi hotkey bằng cách bấm tổ hợp phím mới (hoặc `set-hotkey "<cmd>+<shift>+e"`) |
 | `rewrite-en test "text"` | Gọi API một lần không qua hotkey, để kiểm tra key và prompt |
 | `rewrite-en config` | Tạo (nếu chưa có) và in đường dẫn + giá trị config |
 | `rewrite-en install-autostart` / `uninstall-autostart` | Bật / tắt tự chạy khi đăng nhập |
@@ -43,7 +44,7 @@ effort = "low"                 # low | medium | high
 sounds = true
 ```
 
-Khởi động lại `rewrite-en` sau khi sửa config.
+Khởi động lại `rewrite-en` sau khi sửa config. Riêng hotkey thì dùng `rewrite-en set-hotkey --record` cho tiện: lệnh này kiểm tra tổ hợp phím, chỉ sửa dòng `hotkey`, và trên macOS tự khởi động lại bản chạy nền (nếu đã bật autostart).
 
 ## Quyền trên macOS
 
