@@ -33,3 +33,18 @@ def test_test_command_reports_error_code(no_logging, monkeypatch, capsys):
     monkeypatch.setattr(ClaudeRewriter, "rewrite", fail)
     assert cli.main(["test", "xin chào"]) == 1
     assert "auth" in capsys.readouterr().err
+
+
+@pytest.mark.req("REQ-CLI-3")
+@pytest.mark.parametrize(
+    "argv,verbose",
+    [
+        (["run"], False),
+        (["-v", "run"], True),
+        (["run", "-v"], True),
+        (["--verbose", "test", "x"], True),
+        (["test", "x", "--verbose"], True),
+    ],
+)
+def test_verbose_before_or_after_subcommand(argv, verbose):
+    assert cli.build_parser().parse_args(argv).verbose is verbose

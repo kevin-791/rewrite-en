@@ -80,6 +80,7 @@ Requirements use [EARS](https://alistairmavin.com/ears/) phrasing: *WHEN* (event
 |---|---|
 | REQ-CLI-1 | The `rewrite-en` command shall provide `run`, `set-key`, `test "text"`, `config`, `install-autostart` and `uninstall-autostart`. |
 | REQ-CLI-2 | `rewrite-en test "text"` shall print the rewrite of the text without using the hotkey or the clipboard, and exit non-zero with the error code on failure. |
+| REQ-CLI-3 | The `-v` / `--verbose` option shall be accepted both before and after the subcommand (`rewrite-en -v run` and `rewrite-en run -v`). |
 
 ## 10. Platform
 
