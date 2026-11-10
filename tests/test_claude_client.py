@@ -36,6 +36,7 @@ def make(**kw):
     return ClaudeRewriter(default_config("win32"), "sk-test", client=client), msgs
 
 
+@pytest.mark.req("REQ-RW-1", "REQ-SEC-3")
 def test_request_shape():
     rw, msgs = make()
     assert rw.rewrite("xin chào") == "Hello"
@@ -59,23 +60,28 @@ def test_request_shape():
         ('"a" and "b"', '"a" and "b"'),
     ],
 )
+@pytest.mark.req("REQ-RW-3")
 def test_clean_output(raw, expected):
     assert clean_output(raw, "original") == expected
 
 
+@pytest.mark.req("REQ-RW-3")
 def test_clean_output_keeps_quotes_when_original_was_quoted():
     assert clean_output('"Hello."', '"Xin chào."') == '"Hello."'
 
 
+@pytest.mark.req("REQ-RW-3")
 def test_clean_output_keeps_fence_when_original_was_fenced():
     assert clean_output("```\ncode\n```", "```\ncode\n```") == "```\ncode\n```"
 
 
+@pytest.mark.req("REQ-RW-6")
 def test_thinking_blocks_are_ignored():
     rw, _ = make(content=[block("", "thinking"), block("Hi")])
     assert rw.rewrite("chào") == "Hi"
 
 
+@pytest.mark.req("REQ-RW-4")
 def test_empty_result_is_error():
     rw, _ = make(content=[block('  ""  ')])
     with pytest.raises(RewriteError) as e:
@@ -83,6 +89,7 @@ def test_empty_result_is_error():
     assert e.value.code == "empty_output"
 
 
+@pytest.mark.req("REQ-RW-2")
 def test_too_long_does_not_call_api():
     rw, msgs = make()
     with pytest.raises(RewriteError) as e:
@@ -91,6 +98,7 @@ def test_too_long_does_not_call_api():
     assert msgs.calls == []
 
 
+@pytest.mark.req("REQ-RW-4")
 def test_refusal_and_truncation_are_errors():
     rw, _ = make(stop_reason="refusal")
     with pytest.raises(RewriteError, match="declined"):
@@ -117,6 +125,7 @@ def _status_error(cls, status):
         (anthropic.APITimeoutError(request=httpx.Request("POST", "https://x")), "timeout"),
     ],
 )
+@pytest.mark.req("REQ-RW-5", "REQ-SEC-2")
 def test_api_errors_map_to_codes(error, code):
     rw, _ = make(error=error)
     with pytest.raises(RewriteError) as e:
@@ -124,3 +133,11 @@ def test_api_errors_map_to_codes(error, code):
     assert e.value.code == code
     # Error messages never contain the user's text.
     assert "chào" not in str(e.value)
+
+
+@pytest.mark.req("REQ-RW-5")
+def test_client_timeout_and_single_retry():
+    cfg = default_config("win32")
+    rw = ClaudeRewriter(cfg, "sk-test")
+    assert rw.client.max_retries == 1
+    assert rw.client.timeout == cfg.timeout_seconds == 20

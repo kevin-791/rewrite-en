@@ -3,6 +3,7 @@ import pytest
 from rewrite_en.config import load_config, write_default_config
 
 
+@pytest.mark.req("REQ-HK-2", "REQ-CFG-1")
 def test_defaults_per_os(tmp_path):
     missing = tmp_path / "none.toml"
     assert load_config(missing, "win32").hotkey == "<ctrl>+<alt>+e"
@@ -13,6 +14,7 @@ def test_defaults_per_os(tmp_path):
     assert cfg.timeout_seconds == 20
 
 
+@pytest.mark.req("REQ-CFG-1")
 def test_toml_overrides(tmp_path):
     p = tmp_path / "config.toml"
     p.write_text('hotkey = "<cmd>+<shift>+r"\nmodel = "claude-sonnet-5-5"\nmax_chars = 100\ntimeout_seconds = 5\nunknown = 1\n')
@@ -24,6 +26,7 @@ def test_toml_overrides(tmp_path):
 
 
 @pytest.mark.parametrize("line", ["max_chars = -1", 'max_chars = "x"', 'hotkey = ""', "sounds = 1"])
+@pytest.mark.req("REQ-CFG-1")
 def test_invalid_values_rejected(tmp_path, line):
     p = tmp_path / "config.toml"
     p.write_text(line + "\n")
@@ -31,6 +34,7 @@ def test_invalid_values_rejected(tmp_path, line):
         load_config(p, "win32")
 
 
+@pytest.mark.req("REQ-CFG-2")
 def test_written_default_round_trips(tmp_path):
     p = write_default_config(tmp_path / "sub" / "config.toml")
     cfg = load_config(p)

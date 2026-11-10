@@ -34,3 +34,5 @@ packages = ["src/rewrite_en"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = ["req(*ids): requirement IDs from specs/requirements.md verified by this test"]
+addopts = "--strict-markers"

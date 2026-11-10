@@ -83,9 +83,11 @@ Log chỉ ghi độ dài text, thời gian và mã lỗi, không bao giờ ghi n
 
 ## Phát triển
 
+Project theo **spec-driven development**: spec trong [`specs/`](specs/) ([requirements](specs/requirements.md), [design](specs/design.md), [tasks](specs/tasks.md), [manual tests](specs/manual-tests.md)) là nguồn sự thật. Mọi thay đổi sửa spec trước, rồi test (gắn `@pytest.mark.req("REQ-…")`), rồi code. Quy trình chi tiết trong [CLAUDE.md](CLAUDE.md).
+
 ```bash
 uv venv && uv pip install -e '.[dev]'
-.venv/bin/pytest                 # unit test, mock clipboard và Claude client
+.venv/bin/pytest                 # unit test + kiểm tra traceability requirement ↔ test
 python scripts/spike.py          # Phase 0: thử hotkey + copy/paste, không gọi API
 ```
 
