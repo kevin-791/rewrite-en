@@ -29,8 +29,9 @@ pynput Listener (listener thread)
 | `config.py` | Defaults per OS, TOML load and validation, default file | REQ-HK-2, REQ-CFG-1, REQ-CFG-2 |
 | `keystore.py` | keyring then `ANTHROPIC_API_KEY` | REQ-SEC-1 |
 | `feedback.py` | Sounds: `winsound` on Windows, `afplay` on macOS | REQ-FB-1 |
-| `autostart.py` | Windows Startup `.vbs`; macOS LaunchAgent | REQ-OS-3 |
-| `cli.py` | Subcommands, logging setup (HTTP libraries capped at WARNING) | REQ-CLI-1, REQ-CLI-2, REQ-SEC-2 |
+| `autostart.py` | Windows Startup `.vbs`; macOS LaunchAgent; restart the LaunchAgent after a hotkey change | REQ-OS-3, REQ-CLI-6 |
+| `cli.py` | Subcommands, logging setup (HTTP libraries capped at WARNING) | REQ-CLI-1 … REQ-CLI-3, REQ-SEC-2 |
+| `hotkey_setup.py` | Validate/normalise a hotkey string, turn recorded key events into a combo, rewrite only the `hotkey` line of config.toml | REQ-CLI-4, REQ-CLI-5 |
 
 ## Flow of one hotkey press
 
@@ -68,6 +69,8 @@ Client: `anthropic.Anthropic(timeout=timeout_seconds, max_retries=1)`. Error map
 | D5 | Windows autostart is a hidden `.vbs` in the Startup folder running `pythonw -m rewrite_en run` | A `.lnk` shortcut needs pywin32, outside the allowed dependencies; `pythonw` shows no console | REQ-OS-3 |
 | D6 | macOS LaunchAgent runs `sys.executable -m rewrite_en run`; `install-autostart` prints the resolved python path | Permissions are granted to the real binary, which the user must find | REQ-OS-2, REQ-OS-3 |
 | D7 | Only plain text clipboard is saved and restored | pyperclip is text-only; rich clipboard needs per-OS native code (out of scope) | REQ-PST-3 |
+| D8 | `set-hotkey` validates with our own small parser instead of pynput's, and records keys through `Listener.canonical` | Pure-Python validation is unit-testable on any OS and gives clear error messages; `canonical` strips modifier effects (Ctrl+E is reported as `e`, not `\x05`) | REQ-CLI-4, REQ-CLI-5 |
+| D9 | The config is edited line by line (regex on the `hotkey` line), not re-serialised | Keeps the user's comments and other settings; stdlib has no TOML writer and no new dependency is allowed | REQ-CLI-4 |
 
 ## Dependencies
 

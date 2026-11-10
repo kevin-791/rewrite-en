@@ -8,7 +8,7 @@ from rewrite_en.claude_client import ClaudeRewriter, RewriteError
 def test_subcommands():
     parser = cli.build_parser()
     sub = next(a for a in parser._actions if a.dest == "command")
-    assert set(sub.choices) == {"run", "set-key", "test", "config", "install-autostart", "uninstall-autostart"}
+    assert set(sub.choices) == {"run", "set-key", "set-hotkey", "test", "config", "install-autostart", "uninstall-autostart"}
 
 
 @pytest.fixture
@@ -48,3 +48,46 @@ def test_test_command_reports_error_code(no_logging, monkeypatch, capsys):
 )
 def test_verbose_before_or_after_subcommand(argv, verbose):
     assert cli.build_parser().parse_args(argv).verbose is verbose
+
+
+@pytest.mark.req("REQ-CLI-4")
+def test_set_hotkey_saves_and_rejects(no_logging, monkeypatch, tmp_path, capsys):
+    p = tmp_path / "config.toml"
+    monkeypatch.setattr("rewrite_en.hotkey_setup.config_path", lambda: p)
+    monkeypatch.setattr("rewrite_en.autostart.restart_if_installed", lambda: None)
+    assert cli.main(["set-hotkey", "<SHIFT>+<ctrl>+r"]) == 0
+    assert '"<ctrl>+<shift>+r"' in p.read_text()
+    out = capsys.readouterr().out
+    assert "<ctrl>+<shift>+r" in out and "Restart rewrite-en" in out
+    before = p.read_text()
+    assert cli.main(["set-hotkey", "r"]) == 1
+    assert p.read_text() == before
+    assert "modifier" in capsys.readouterr().err
+
+
+@pytest.mark.req("REQ-CLI-6")
+def test_set_hotkey_restarts_launch_agent(no_logging, monkeypatch, tmp_path, capsys):
+    p = tmp_path / "config.toml"
+    monkeypatch.setattr("rewrite_en.hotkey_setup.config_path", lambda: p)
+    monkeypatch.setattr("rewrite_en.autostart.restart_if_installed", lambda: "Restarted the background rewrite-en.")
+    assert cli.main(["set-hotkey", "<cmd>+e"]) == 0
+    out = capsys.readouterr().out
+    assert "Restarted the background rewrite-en." in out and "Restart rewrite-en" not in out
+
+
+@pytest.mark.req("REQ-CLI-6")
+def test_restart_if_installed(monkeypatch, tmp_path):
+    from rewrite_en import autostart
+
+    calls = []
+    monkeypatch.setattr(autostart, "_launchctl", lambda *a: calls.append(a) or type("R", (), {"returncode": 0, "stderr": ""})())
+    monkeypatch.setattr(autostart, "_mac_plist", lambda: tmp_path / "com.rewrite-en.plist")
+    monkeypatch.setattr(autostart.os, "getuid", lambda: 501, raising=False)
+
+    monkeypatch.setattr(autostart.sys, "platform", "win32")
+    assert autostart.restart_if_installed() is None
+    monkeypatch.setattr(autostart.sys, "platform", "darwin")
+    assert autostart.restart_if_installed() is None  # plist not installed
+    (tmp_path / "com.rewrite-en.plist").write_text("x")
+    assert autostart.restart_if_installed()
+    assert calls == [("kickstart", "-k", "gui/501/com.rewrite-en")]

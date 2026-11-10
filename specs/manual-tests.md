@@ -12,9 +12,10 @@ Each case lists the requirement IDs it verifies (`tests/test_traceability.py` re
 | S-4 | Rewrite a ~150-word paragraph 10 times | Median ≤ 3 s from hotkey to new text | REQ-NF-1 |
 | S-5 | macOS only: turn off Accessibility or Input Monitoring for the terminal, run `rewrite-en run` | Warning naming the missing permission and the program path | REQ-OS-2 |
 | S-6 | `rewrite-en install-autostart`, reboot, use the hotkey; then `uninstall-autostart`, reboot | Works after reboot with no console window; after uninstall it no longer starts | REQ-OS-3 |
+| S-7 | `rewrite-en set-hotkey --record`, press Cmd+Shift+R; with autostart installed on macOS, use the new hotkey right away | Prints the recorded combo; the new hotkey works without restarting by hand | REQ-CLI-5, REQ-CLI-6 |
 
 ## Results
 
 | Case | Windows | macOS | Notes |
 |---|---|---|---|
-| S-1 … S-6 | not run | not run | |
+| S-1 … S-7 | not run | not run | |

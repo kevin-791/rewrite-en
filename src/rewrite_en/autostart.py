@@ -102,3 +102,16 @@ def uninstall() -> str:
         return "Autostart was not installed."
 
     raise RuntimeError(f"Autostart is not supported on {sys.platform}")
+
+
+def restart_if_installed() -> str | None:
+    """Restart the macOS LaunchAgent so a config change applies now (REQ-CLI-6).
+
+    Returns a message if it restarted, None if there was nothing to restart.
+    """
+    if sys.platform != "darwin" or not _mac_plist().exists():
+        return None
+    res = _launchctl("kickstart", "-k", f"gui/{os.getuid()}/{LABEL}")
+    if res.returncode != 0:
+        return f"Could not restart the background rewrite-en ({res.stderr.strip()}); log out and back in."
+    return "Restarted the background rewrite-en; the new hotkey works now."
