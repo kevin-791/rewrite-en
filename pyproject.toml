@@ -1,0 +1,38 @@
+[project]
+name = "rewrite-en"
+version = "0.1.0"
+description = "Select text anywhere, press a hotkey, get it rewritten as natural English by Claude."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "anthropic>=2.7,<3",
+    "keyring>=24",
+    "platformdirs>=4",
+    "pynput>=1.7.6",
+    "pyperclip>=1.8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+rewrite-en = "rewrite_en.cli:main"
+
+# Same entry point, but on Windows it is built as a windowed exe (no console),
+# which is what autostart launches.
+[project.gui-scripts]
+rewrite-enw = "rewrite_en.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rewrite_en"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = ["req(*ids): requirement IDs from specs/requirements.md verified by this test"]
+addopts = "--strict-markers"
