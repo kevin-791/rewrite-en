@@ -9,7 +9,7 @@ import time
 import anthropic
 
 from rewrite_en.config import Config
-from rewrite_en.prompts import SYSTEM_PROMPT, build_user_message
+from rewrite_en.prompts import build_system_prompt, build_user_message
 
 log = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class ClaudeRewriter:
             response = self.client.messages.create(
                 model=self.config.model,
                 max_tokens=self.config.max_tokens,
-                system=SYSTEM_PROMPT,
+                system=build_system_prompt(self.config.style),
                 messages=[{"role": "user", "content": build_user_message(text)}],
                 output_config={"effort": self.config.effort},
             )

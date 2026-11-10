@@ -23,7 +23,7 @@ pynput Listener (listener thread)
 |---|---|---|
 | `pipeline.py` | One hotkey press, end to end; overlap lock; restore on every path | REQ-HK-1, REQ-HK-3, REQ-CAP-1, REQ-CAP-2, REQ-PST-1, REQ-PST-2, REQ-FB-1, REQ-SEC-2 |
 | `claude_client.py` | Build request, map API errors to codes, clean output | REQ-RW-1 … REQ-RW-6, REQ-SEC-2, REQ-SEC-3 |
-| `prompts.py` | Fixed system prompt, `<text>` wrapping | REQ-RW-1 |
+| `prompts.py` | System prompt = fixed rules + writing style (default or from config), `<text>` wrapping | REQ-RW-1, REQ-RW-7, REQ-CFG-3 |
 | `clipboard_io.py` | pyperclip clipboard, pynput copy/paste with Ctrl/Cmd, `ModifierTracker` | REQ-OS-1, REQ-HK-1, REQ-PST-3 |
 | `app.py` | Listener, hotkey parse, worker thread, macOS permission check | REQ-HK-2, REQ-HK-4, REQ-OS-2 |
 | `config.py` | Defaults per OS, TOML load and validation, default file | REQ-HK-2, REQ-CFG-1, REQ-CFG-2 |
@@ -50,7 +50,7 @@ Only lengths, durations and error codes are logged. (REQ-SEC-2)
 client.messages.create(
     model=config.model,                    # default claude-haiku-5-5
     max_tokens=2048,
-    system=SYSTEM_PROMPT,
+    system=build_system_prompt(config.style),   # rules + writing style
     messages=[{"role": "user", "content": f"<text>\n{selection}\n</text>"}],
     output_config={"effort": config.effort},   # default "low"
 )
@@ -71,6 +71,7 @@ Client: `anthropic.Anthropic(timeout=timeout_seconds, max_retries=1)`. Error map
 | D7 | Only plain text clipboard is saved and restored | pyperclip is text-only; rich clipboard needs per-OS native code (out of scope) | REQ-PST-3 |
 | D8 | `set-hotkey` validates with our own small parser instead of pynput's, and records keys through `Listener.canonical` | Pure-Python validation is unit-testable on any OS and gives clear error messages; `canonical` strips modifier effects (Ctrl+E is reported as `e`, not `\x05`) | REQ-CLI-4, REQ-CLI-5 |
 | D9 | The config is edited line by line (regex on the `hotkey` line), not re-serialised | Keeps the user's comments and other settings; stdlib has no TOML writer and no new dependency is allowed | REQ-CLI-4 |
+| D10 | The writing style is a separate, replaceable section of the system prompt; the safety rules (keep names/URLs/code, `<text>` is data, output only the rewrite) are fixed | Users can tune tone without being able to break in-place replacement or prompt-injection protection | REQ-RW-7, REQ-CFG-3 |
 
 ## Dependencies
 
