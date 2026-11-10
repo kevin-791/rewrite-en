@@ -104,15 +104,22 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="rewrite-en", description="Rewrite selected text into natural English with a hotkey.")
     p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     p.add_argument("-v", "--verbose", action="store_true", help="also log to the terminal")
+    # Also accept -v after the subcommand; SUPPRESS keeps a top-level -v from being reset.
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("-v", "--verbose", action="store_true", default=argparse.SUPPRESS, help="also log to the terminal")
     sub = p.add_subparsers(dest="command", required=True)
-    sub.add_parser("run", help="run in the background and listen for the hotkey").set_defaults(func=cmd_run)
-    sub.add_parser("set-key", help="store your Anthropic API key in the OS keychain").set_defaults(func=cmd_set_key)
-    t = sub.add_parser("test", help="rewrite TEXT once, without the hotkey")
-    t.add_argument("text")
-    t.set_defaults(func=cmd_test)
-    sub.add_parser("config", help=f"create/show the config file ({config_path()})").set_defaults(func=cmd_config)
-    sub.add_parser("install-autostart", help="start at login").set_defaults(func=cmd_install_autostart)
-    sub.add_parser("uninstall-autostart", help="stop starting at login").set_defaults(func=cmd_uninstall_autostart)
+
+    def add(name, help_, func):
+        sp = sub.add_parser(name, help=help_, parents=[common])
+        sp.set_defaults(func=func)
+        return sp
+
+    add("run", "run in the background and listen for the hotkey", cmd_run)
+    add("set-key", "store your Anthropic API key in the OS keychain", cmd_set_key)
+    add("test", "rewrite TEXT once, without the hotkey", cmd_test).add_argument("text")
+    add("config", f"create/show the config file ({config_path()})", cmd_config)
+    add("install-autostart", "start at login", cmd_install_autostart)
+    add("uninstall-autostart", "stop starting at login", cmd_uninstall_autostart)
     return p
 
 

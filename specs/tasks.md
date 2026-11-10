@@ -20,6 +20,7 @@ Tasks follow the plan's phases. A task is done when its code is merged **and** t
 
 - [x] T2.1 `app.py` with worker thread and overlap lock. (REQ-HK-3, REQ-HK-4)
 - [x] T2.2 `config.py`, `cli.py`, `feedback.py`. (REQ-CFG-1, REQ-CFG-2, REQ-CLI-1, REQ-CLI-2, REQ-FB-1)
+- [x] T2.4 Accept `-v` after the subcommand too (bug found on first real install). (REQ-CLI-3)
 - [~] T2.3 *Done when* `set-key`, `test`, `run` work on a real machine (S-1, S-2).
 
 ## Phase 3: Errors and edge cases
