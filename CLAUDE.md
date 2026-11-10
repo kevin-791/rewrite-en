@@ -7,12 +7,12 @@ This project uses **spec-driven development**. The specs in `specs/` are the sou
 - `specs/requirements.md`: what the system does. Every requirement has a stable ID (`REQ-<AREA>-<n>`) in EARS phrasing.
 - `specs/design.md`: how: modules, flow, the Claude request, and numbered decisions (`D<n>`) with the requirements they serve.
 - `specs/tasks.md`: phased tasks, each citing the requirements it delivers, with status `[ ]` / `[~]` / `[x]`.
-- `specs/manual-tests.md`: manual cases (`M-<nn>`) for what unit tests can't reach (real keyboard, apps, OS permissions), each citing requirement IDs.
+- `specs/manual-tests.md`: a short smoke checklist (`S-<n>`) for what unit tests can't reach (real keyboard, apps, OS permissions, real API), each citing requirement IDs. Keep it short: anything testable with fakes belongs in unit tests.
 
 ## Workflow for any change
 
 1. **Spec first.** Add or edit the requirement in `requirements.md` (new ID for new behaviour; never reuse or renumber an ID, mark removed ones `~~REQ-…~~ (removed)` instead of deleting the row). Update `design.md` if the design or a decision changes, and add a task in `tasks.md`.
-2. **Test next.** Write or update tests tagged `@pytest.mark.req("REQ-…")`, or add a manual case in `manual-tests.md` when automation isn't possible.
+2. **Test next.** Write or update tests tagged `@pytest.mark.req("REQ-…")`. Only when a real machine is truly needed, cite the ID in a smoke case in `manual-tests.md` instead.
 3. **Code last.** Implement until the tests pass.
 4. **Gate.** `pytest` must be green. `tests/test_traceability.py` fails if any requirement has no automated or manual test, or a test cites an ID that doesn't exist.
 5. A PR description lists the requirement IDs it adds or changes.

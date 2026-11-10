@@ -2,7 +2,7 @@
 
 Status: **Approved for MVP** · Source: [plan](https://claude.ai/artifact/WKLqKV9xvHpdgU7LJzPgwH) · Design: [design.md](design.md) · Tasks: [tasks.md](tasks.md)
 
-This file is the source of truth for what rewrite-en does. Code and tests follow it, not the other way around. Every requirement has a stable ID. Each ID must be verified by at least one automated test (`@pytest.mark.req("ID")`) or one manual test case in [manual-tests.md](manual-tests.md). `tests/test_traceability.py` enforces this.
+This file is the source of truth for what rewrite-en does. Code and tests follow it, not the other way around. Every requirement has a stable ID. Each ID must be verified by at least one automated test (`@pytest.mark.req("ID")`) or, only when it needs a real machine, one smoke case in [manual-tests.md](manual-tests.md). `tests/test_traceability.py` enforces this.
 
 Requirements use [EARS](https://alistairmavin.com/ears/) phrasing: *WHEN* (event), *WHILE* (state), *IF … THEN* (unwanted behaviour), *WHERE* (feature/platform), or plain *shall* (always).
 

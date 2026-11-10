@@ -29,7 +29,7 @@ def automated_coverage() -> set[str]:
 def manual_coverage() -> set[str]:
     ids = set()
     for line in (SPECS / "manual-tests.md").read_text(encoding="utf-8").splitlines():
-        if re.match(r"\|\s*M-\d+\s*\|", line):
+        if re.match(r"\|\s*S-\d+\s*\|", line):
             ids.update(REQ_ID.findall(line.rstrip(" |").rsplit("|", 1)[-1]))
     return ids
 
