@@ -42,6 +42,9 @@ max_chars = 6000               # vượt giới hạn thì không gọi API
 timeout_seconds = 20
 effort = "low"                 # low | medium | high
 sounds = true
+# style = """                  # thay văn phong mặc định (IELTS ~5.5, câu ngắn, thân thiện)
+# Viết tiếng Anh trang trọng hơn cho email khách hàng.
+# """
 ```
 
 Khởi động lại `rewrite-en` sau khi sửa config. Riêng hotkey thì dùng `rewrite-en set-hotkey --record` cho tiện: lệnh này kiểm tra tổ hợp phím, chỉ sửa dòng `hotkey`, và trên macOS tự khởi động lại bản chạy nền (nếu đã bật autostart).

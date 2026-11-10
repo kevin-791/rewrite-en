@@ -14,6 +14,7 @@ Tasks follow the plan's phases. A task is done when its code is merged **and** t
 - [x] T1.1 `prompts.py`, `claude_client.py` with error mapping and clean-up. (REQ-RW-1 … REQ-RW-6)
 - [x] T1.2 `clipboard_io.py`, `keystore.py`. (REQ-OS-1, REQ-SEC-1)
 - [x] T1.3 `pipeline.RewritePipeline.rewrite_selection()`. (REQ-CAP-1, REQ-CAP-2, REQ-PST-1, REQ-PST-2)
+- [x] T1.5 Writing-style section in the prompt, overridable with `style` in config. (REQ-RW-7, REQ-CFG-3)
 - [~] T1.4 *Done when* a Vietnamese selection in Teams is replaced by English (S-2).
 
 ## Phase 2: App, config, CLI

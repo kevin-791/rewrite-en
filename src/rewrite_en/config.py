@@ -11,6 +11,7 @@ from pathlib import Path
 from platformdirs import user_config_dir, user_log_dir
 
 from rewrite_en import APP_NAME
+from rewrite_en.prompts import DEFAULT_STYLE
 
 log = logging.getLogger(__name__)
 
@@ -33,6 +34,8 @@ class Config:
     # Claude effort level. "low" keeps latency down for short rewrites.
     effort: str = "low"
     sounds: bool = True
+    # Writing-style section of the system prompt (REQ-RW-7, REQ-CFG-3).
+    style: str = DEFAULT_STYLE
 
 
 def default_config(platform: str | None = None) -> Config:
@@ -106,7 +109,9 @@ def write_default_config(path: Path | None = None) -> Path:
         f"max_chars = {cfg.max_chars}\n"
         f"timeout_seconds = {int(cfg.timeout_seconds)}\n"
         f'effort = "{cfg.effort}"   # low | medium | high\n'
-        f"sounds = {'true' if cfg.sounds else 'false'}\n",
+        f"sounds = {'true' if cfg.sounds else 'false'}\n"
+        "# Uncomment to replace the default writing style (the other prompt rules stay):\n"
+        '# style = """\n# Use basic, natural English. Keep sentences short and friendly.\n# """\n',
         encoding="utf-8",
     )
     return path

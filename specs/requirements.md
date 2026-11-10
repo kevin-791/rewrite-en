@@ -44,6 +44,7 @@ Requirements use [EARS](https://alistairmavin.com/ears/) phrasing: *WHEN* (event
 | REQ-RW-4 | IF the result is empty after clean-up, or the response stopped because of `refusal` or `max_tokens`, THEN the system shall treat it as an error and paste nothing. |
 | REQ-RW-5 | IF the API call fails (network, timeout, 401, 403, 404, 429, 400, 5xx) THEN the system shall give error feedback with a distinct error code and leave the selection unchanged. The request timeout shall be `timeout_seconds` (default 20) with at most 1 retry. |
 | REQ-RW-6 | The system shall use only `text` content blocks of the response as the result (thinking blocks are ignored). |
+| REQ-RW-7 | The system prompt shall include a writing-style section. The default style is: basic, natural English (about IELTS 5.5 level); short, simple, clear sentences; a friendly, human tone, like a Vietnamese developer writing to international colleagues; no fancy words, complex grammar, overly formal language or AI-sounding phrases; the original meaning kept; natural, not textbook-like. |
 
 ## 5. Pasting and restoring
 
@@ -59,6 +60,7 @@ Requirements use [EARS](https://alistairmavin.com/ears/) phrasing: *WHEN* (event
 |---|---|
 | REQ-CFG-1 | The system shall read `config.toml` from the OS config directory (via `platformdirs`), apply its values over the defaults, ignore unknown keys, and reject invalid values with an error. |
 | REQ-CFG-2 | WHEN `run` or `config` starts and no config file exists, the system shall create one with the defaults; it shall never overwrite an existing file. |
+| REQ-CFG-3 | WHERE `config.toml` sets `style`, that text shall replace the default writing style of REQ-RW-7 (the other prompt rules stay). An empty `style` shall be rejected. |
 
 ## 7. Security and privacy
 

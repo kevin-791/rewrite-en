@@ -25,8 +25,8 @@ def test_toml_overrides(tmp_path):
     assert cfg.timeout_seconds == 5.0
 
 
-@pytest.mark.parametrize("line", ["max_chars = -1", 'max_chars = "x"', 'hotkey = ""', "sounds = 1"])
-@pytest.mark.req("REQ-CFG-1")
+@pytest.mark.parametrize("line", ["max_chars = -1", 'max_chars = "x"', 'hotkey = ""', "sounds = 1", 'style = ""', 'style = "  "'])
+@pytest.mark.req("REQ-CFG-1", "REQ-CFG-3")
 def test_invalid_values_rejected(tmp_path, line):
     p = tmp_path / "config.toml"
     p.write_text(line + "\n")
@@ -43,3 +43,14 @@ def test_written_default_round_trips(tmp_path):
     p.write_text('model = "x"\n')
     write_default_config(p)
     assert p.read_text() == 'model = "x"\n'
+
+
+@pytest.mark.req("REQ-CFG-3")
+def test_style_from_toml(tmp_path):
+    from rewrite_en.prompts import DEFAULT_STYLE
+
+    missing = tmp_path / "none.toml"
+    assert load_config(missing, "win32").style == DEFAULT_STYLE
+    p = tmp_path / "config.toml"
+    p.write_text('style = """\nVery formal British English.\n"""\n')
+    assert load_config(p, "win32").style == "Very formal British English."
